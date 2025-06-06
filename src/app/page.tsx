@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Computer, ComputerGroup, WakeOnLanStatus } from '../types';
 import AddComputerForm from '../components/AddComputerForm';
 import AddGroupForm from '../components/AddGroupForm';
@@ -11,23 +13,43 @@ import StatusMessage from '../components/StatusMessage';
 type Tab = 'computers' | 'groups';
 
 export default function Home() {
+  const { token, logout } = useAuth();
+  const router = useRouter();
   const [computers, setComputers] = useState<Computer[]>([]);
   const [groups, setGroups] = useState<ComputerGroup[]>([]);
   const [status, setStatus] = useState<WakeOnLanStatus | null>(null);
   const [showAddComputer, setShowAddComputer] = useState(false);
   const [showAddGroup, setShowAddGroup] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('computers');
+
+  useEffect(() => {
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    fetchData();
+  }, [token, router]);
 
   // Função para buscar dados
   const fetchData = async () => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const [computersResponse, groupsResponse] = await Promise.all([
-        fetch('/api/computers'),
-        fetch('/api/groups')
+        fetch('/api/computers', { headers }),
+        fetch('/api/groups', { headers })
       ]);
 
       if (!computersResponse.ok || !groupsResponse.ok) {
+        if (computersResponse.status === 401 || groupsResponse.status === 401) {
+          logout();
+          return;
+        }
         throw new Error('Failed to fetch data');
       }
 
@@ -36,23 +58,19 @@ export default function Home() {
 
       setComputers(computersData);
       setGroups(groupsData);
+      setError(null);
       setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch data');
       setIsLoading(false);
     }
   };
-
-  // Efeito para carregar dados iniciais
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   // Snapshot para atualização automática
   useEffect(() => {
     const interval = setInterval(fetchData, 5000); // Atualiza a cada 5 segundos
     return () => clearInterval(interval);
-  }, []);
+  }, [token]);
 
   // Efeito para limpar mensagens de status após 5 segundos
   useEffect(() => {
@@ -66,9 +84,13 @@ export default function Home() {
 
   const wakeComputer = async (mac: string, ip?: string) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const response = await fetch('/api/wake', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ mac, ip }),
       });
       const result = await response.json();
@@ -83,8 +105,9 @@ export default function Home() {
   };
 
   const addComputerToGroup = async (computerId: string, groupId: string) => {
+    let group: ComputerGroup | undefined;
     try {
-      const group = groups.find(g => g.id === groupId);
+      group = groups.find(g => g.id === groupId);
       if (!group) throw new Error('Group not found');
 
       const updatedGroup = {
@@ -92,9 +115,13 @@ export default function Home() {
         computerIds: [...group.computerIds, computerId]
       };
 
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const response = await fetch('/api/groups', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(updatedGroup),
       });
 
@@ -113,7 +140,7 @@ export default function Home() {
       setStatus({
         success: false,
         message: 'Failed to add computer to group',
-        target: group?.name,
+        target: group ? group.name : 'unknown',
       });
     }
   };
@@ -135,20 +162,21 @@ export default function Home() {
     });
   };
 
-  const wakeSelectedComputers = async (selectedComputerIds: string[]) => {
-    for (const computerId of selectedComputerIds) {
-      const computer = computers.find(c => c.id === computerId);
-      if (computer) {
-        await wakeComputer(computer.mac, computer.ip);
-      }
+  const wakeSelectedComputers = async (selectedComputers: Computer[]) => {
+    for (const computer of selectedComputers) {
+      await wakeComputer(computer.mac, computer.ip);
     }
   };
 
   const addComputer = async (computer: Computer) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const response = await fetch('/api/computers', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(computer),
       });
       
@@ -177,6 +205,10 @@ export default function Home() {
 
   const addGroup = async (group: Omit<ComputerGroup, 'id'>) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const newGroup: ComputerGroup = {
         ...group,
         id: Date.now().toString(),
@@ -185,7 +217,7 @@ export default function Home() {
 
       const response = await fetch('/api/groups', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(newGroup),
       });
 
@@ -211,9 +243,13 @@ export default function Home() {
 
   const deleteComputer = async (id: string) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       await fetch('/api/computers', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ id }),
       });
       
@@ -235,9 +271,13 @@ export default function Home() {
 
   const deleteGroup = async (id: string) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       await fetch('/api/groups', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ id }),
       });
       
@@ -267,9 +307,13 @@ export default function Home() {
       const newGroup = groups.find(g => g.id === computer.groupId);
 
       // Atualiza o computador
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const response = await fetch('/api/computers', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(computer),
       });
       
@@ -286,7 +330,7 @@ export default function Home() {
         };
         await fetch('/api/groups', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(updatedOldGroup),
         });
         setGroups(groups.map(g => g.id === oldGroup.id ? updatedOldGroup : g));
@@ -300,7 +344,7 @@ export default function Home() {
         };
         await fetch('/api/groups', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(updatedNewGroup),
         });
         setGroups(groups.map(g => g.id === newGroup.id ? updatedNewGroup : g));
@@ -323,9 +367,13 @@ export default function Home() {
 
   const updateGroup = async (group: ComputerGroup) => {
     try {
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+
       const response = await fetch('/api/groups', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(group),
       });
       
@@ -358,99 +406,120 @@ export default function Home() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="p-4 text-red-500">
+        Error: {error}
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8">
-      {status && (
-        <div 
-          className={`p-4 rounded-lg ${
-            status.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-          }`}
-        >
-          {status.message}
-        </div>
-      )}
-
-      <div className="border-b border-gray-200">
-        <nav className="flex gap-4">
+    <div className="container mx-auto p-4">
+      <div className="bg-test-red h-20 w-20"></div>
+      <main className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Wake-on-LAN Dashboard</h1>
           <button
-            onClick={() => setActiveTab('computers')}
-            className={`px-4 py-2 font-medium border-b-2 -mb-px ${
-              activeTab === 'computers'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+            onClick={logout}
+            className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
+        </div>
+
+        {status && (
+          <div 
+            className={`p-4 rounded-lg ${
+              status.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
             }`}
           >
-            Computers
-          </button>
-          <button
-            onClick={() => setActiveTab('groups')}
-            className={`px-4 py-2 font-medium border-b-2 -mb-px ${
-              activeTab === 'groups'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Groups
-          </button>
-        </nav>
-      </div>
-
-      <div className="flex justify-end">
-        {activeTab === 'computers' && !showAddGroup && (
-          <button
-            onClick={() => setShowAddComputer(!showAddComputer)}
-            className={`btn ${showAddComputer ? 'bg-gray-100 text-gray-700' : 'btn-primary'}`}
-          >
-            {showAddComputer ? '× Cancel' : '+ Add Computer'}
-          </button>
+            {status.message}
+          </div>
         )}
-        {activeTab === 'groups' && !showAddComputer && (
-          <button
-            onClick={() => setShowAddGroup(!showAddGroup)}
-            className={`btn ${showAddGroup ? 'bg-gray-100 text-gray-700' : 'btn-success'}`}
-          >
-            {showAddGroup ? '× Cancel' : '+ Add Group'}
-          </button>
-        )}
-      </div>
 
-      {showAddComputer && (
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold mb-4">Add New Computer</h2>
-          <AddComputerForm onAdd={addComputer} groups={groups} />
+        <div className="border-b border-gray-200">
+          <nav className="flex gap-4">
+            <button
+              onClick={() => setActiveTab('computers')}
+              className={`px-4 py-2 font-medium border-b-2 -mb-px ${
+                activeTab === 'computers'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Computers
+            </button>
+            <button
+              onClick={() => setActiveTab('groups')}
+              className={`px-4 py-2 font-medium border-b-2 -mb-px ${
+                activeTab === 'groups'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Groups
+            </button>
+          </nav>
         </div>
-      )}
 
-      {showAddGroup && (
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold mb-4">Create New Group</h2>
-          <AddGroupForm
-            onSubmit={addGroup}
-            onCancel={() => setShowAddGroup(false)}
+        <div className="flex justify-end">
+          {activeTab === 'computers' && !showAddGroup && (
+            <button
+              onClick={() => setShowAddComputer(!showAddComputer)}
+              className={`btn ${showAddComputer ? 'bg-gray-100 text-gray-700' : 'btn-primary'}`}
+            >
+              {showAddComputer ? '× Cancel' : '+ Add Computer'}
+            </button>
+          )}
+          {activeTab === 'groups' && !showAddComputer && (
+            <button
+              onClick={() => setShowAddGroup(!showAddGroup)}
+              className={`btn ${showAddGroup ? 'bg-gray-100 text-gray-700' : 'btn-success'}`}
+            >
+              {showAddGroup ? '× Cancel' : '+ Add Group'}
+            </button>
+          )}
+        </div>
+
+        {showAddComputer && (
+          <div className="card p-6">
+            <h2 className="text-xl font-semibold mb-4">Add New Computer</h2>
+            <AddComputerForm onAdd={addComputer} groups={groups} />
+          </div>
+        )}
+
+        {showAddGroup && (
+          <div className="card p-6">
+            <h2 className="text-xl font-semibold mb-4">Create New Group</h2>
+            <AddGroupForm
+              onSubmit={addGroup}
+              onCancel={() => setShowAddGroup(false)}
+            />
+          </div>
+        )}
+
+        {activeTab === 'computers' && (
+          <ComputersTable
+            computers={computers}
+            groups={groups}
+            onWake={wakeComputer}
+            onDelete={deleteComputer}
+            onWakeSelected={wakeSelectedComputers}
+            onUpdate={updateComputer}
+            onAddToGroup={addComputerToGroup}
           />
-        </div>
-      )}
+        )}
 
-      {activeTab === 'computers' && (
-        <ComputersTable
-          computers={computers}
-          groups={groups}
-          onWake={wakeComputer}
-          onDelete={deleteComputer}
-          onWakeSelected={wakeSelectedComputers}
-          onUpdate={updateComputer}
-          onAddToGroup={addComputerToGroup}
-        />
-      )}
-
-      {activeTab === 'groups' && (
-        <GroupsTable
-          groups={groups}
-          onWake={wakeGroup}
-          onDelete={deleteGroup}
-          onUpdate={updateGroup}
-        />
-      )}
+        {activeTab === 'groups' && (
+          <GroupsTable
+            groups={groups}
+            onWake={wakeGroup}
+            onDelete={deleteGroup}
+            onUpdate={updateGroup}
+          />
+        )}
+      </main>
     </div>
   );
 }

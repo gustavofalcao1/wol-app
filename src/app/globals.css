@@ -2,19 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #f8fafc;
-  --foreground: #1e293b;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --secondary: #64748b;
-  --border: #e2e8f0;
-  --success: #22c55e;
-  --success-hover: #16a34a;
-  --error: #ef4444;
-  --card-bg: #ffffff;
-}
-
 @layer base {
   body {
     @apply bg-background text-foreground;

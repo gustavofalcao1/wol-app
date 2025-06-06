@@ -11,6 +11,7 @@ interface ComputersTableProps {
   onDelete: (id: string) => void;
   onWakeSelected: (computers: Computer[]) => void;
   onUpdate: (computer: Computer) => void;
+  onAddToGroup: (computerId: string, groupId: string) => void;
 }
 
 export default function ComputersTable({
@@ -20,6 +21,7 @@ export default function ComputersTable({
   onDelete,
   onWakeSelected,
   onUpdate,
+  onAddToGroup,
 }: ComputersTableProps) {
   const [selectedComputers, setSelectedComputers] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<keyof Computer>('name');

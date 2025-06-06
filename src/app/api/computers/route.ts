@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import * as db from '@/lib/db';
+import { getComputers, addComputer, updateComputer, deleteComputer } from '@/data/db';
+import type { Computer } from '@/types/db';
 
 export async function GET() {
   try {
-    const computers = await db.getComputers();
+    const computers = await getComputers();
     return NextResponse.json(computers);
   } catch (error) {
     return NextResponse.json(
@@ -15,9 +16,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const computer = await request.json();
-    const newComputer = await db.addComputer(computer);
-    return NextResponse.json(newComputer, { status: 201 });
+    const computer: Computer = await request.json();
+    const result = await addComputer(computer);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to add computer' },
@@ -28,9 +29,9 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const computer = await request.json();
-    const updatedComputer = await db.updateComputer(computer);
-    return NextResponse.json(updatedComputer);
+    const computer: Computer = await request.json();
+    const result = await updateComputer(computer);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to update computer' },
@@ -42,7 +43,7 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    await db.deleteComputer(id);
+    await deleteComputer(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

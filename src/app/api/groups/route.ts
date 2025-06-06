@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import * as db from '@/lib/db';
+import { getGroups, addGroup, updateGroup, deleteGroup } from '@/data/db';
+import type { ComputerGroup } from '@/types/db';
 
 export async function GET() {
   try {
-    const groups = await db.getGroups();
+    const groups = await getGroups();
     return NextResponse.json(groups);
   } catch (error) {
     return NextResponse.json(
@@ -15,9 +16,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const group = await request.json();
-    const newGroup = await db.addGroup(group);
-    return NextResponse.json(newGroup, { status: 201 });
+    const group: ComputerGroup = await request.json();
+    const result = await addGroup(group);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to add group' },
@@ -28,9 +29,9 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const group = await request.json();
-    const updatedGroup = await db.updateGroup(group);
-    return NextResponse.json(updatedGroup);
+    const group: ComputerGroup = await request.json();
+    const result = await updateGroup(group);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to update group' },
@@ -42,7 +43,7 @@ export async function PUT(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { id } = await request.json();
-    await db.deleteGroup(id);
+    await deleteGroup(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

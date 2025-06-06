@@ -1,0 +1,33 @@
+.dark {
+  /* Cores */
+  --color-primary: #6366F1;
+  --color-primary-dark: #4F46E5;
+  --color-primary-light: #818CF8;
+
+  --color-background: #111827;
+  --color-background-alt: #1F2937;
+
+  --color-surface: #1F2937;
+  --color-surface-alt: #374151;
+
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #D1D5DB;
+  --color-text-disabled: #6B7280;
+
+  --color-success: #10B981;
+  --color-success-light: #065F46;
+  
+  --color-error: #EF4444;
+  --color-error-light: #991B1B;
+  
+  --color-warning: #F59E0B;
+  --color-warning-light: #92400E;
+  
+  --color-info: #3B82F6;
+  --color-info-light: #1E40AF;
+
+  /* Shadows */
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}

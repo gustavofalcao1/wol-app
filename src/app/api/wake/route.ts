@@ -1,31 +1,42 @@
 import { NextResponse } from 'next/server';
 import wol from 'node-wol';
 
-// Função para formatar o MAC address
+/**
+ * Format MAC address to standard XX:XX:XX:XX:XX:XX format
+ * @param mac MAC address in any format
+ * @returns Formatted MAC address
+ */
 function formatMacAddress(mac: string): string {
-  // Remove todos os caracteres não hexadecimais
+  // Remove all non-hexadecimal characters
   const cleanMac = mac.replace(/[^0-9A-Fa-f]/g, '');
   
-  // Verifica se tem 12 caracteres (6 bytes)
+  // Check if it has 12 characters (6 bytes)
   if (cleanMac.length !== 12) {
     throw new Error('Invalid MAC address length');
   }
 
-  // Formata como XX:XX:XX:XX:XX:XX
+  // Format as XX:XX:XX:XX:XX:XX
   return cleanMac.match(/.{2}/g)?.join(':') || '';
 }
 
-// Função para validar o MAC address
+/**
+ * Validate MAC address format
+ * @param mac MAC address to validate
+ * @returns true if MAC is valid
+ */
 function isValidMacAddress(mac: string): boolean {
   const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
   return macRegex.test(mac);
 }
 
+/**
+ * Wake-on-LAN API endpoint
+ */
 export async function POST(request: Request) {
   try {
     const { mac, ip } = await request.json();
 
-    // Valida o MAC address
+    // Validate MAC address
     if (!mac) {
       return NextResponse.json(
         { error: 'MAC address is required' },
@@ -33,7 +44,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Tenta formatar o MAC address
+    // Try to format MAC address
     let formattedMac: string;
     try {
       formattedMac = formatMacAddress(mac);
@@ -47,7 +58,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verifica se o MAC address está no formato correto
+    // Check if MAC address is in correct format
     if (!isValidMacAddress(formattedMac)) {
       return NextResponse.json(
         { error: 'Invalid MAC address format' },
@@ -55,7 +66,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Envia o pacote WOL
+    // Send WOL packet
     await new Promise((resolve, reject) => {
       wol.wake(formattedMac, { address: ip || '255.255.255.255' }, (error: any) => {
         if (error) reject(error);
