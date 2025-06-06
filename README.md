@@ -1,123 +1,93 @@
-# SysMaster - Hub de Gerenciamento para SysAdmins
+# Wake-on-LAN Web Application
 
-SysMaster é uma plataforma moderna e flexível para gerenciamento de dispositivos em rede, com foco inicial em inventário e Wake-on-LAN, projetada para expansão com mais recursos de administração de sistemas.
+A modern web application for managing and waking computers remotely using Wake-on-LAN (WoL) technology. Built with Next.js and TypeScript.
 
-## 🚀 Funcionalidades
+## Features
 
-### Gerenciamento de Dispositivos
-- Inventário detalhado de dispositivos
-- Wake-on-LAN individual e em grupo
-- Monitoramento de status em tempo real
-- Agrupamento hierárquico
-- Filtros e busca avançada
+- 🖥️ Manage computers and groups
+- 🌐 Wake computers remotely via WoL
+- 🔄 Real-time updates (5-second refresh)
+- 📱 Responsive design
+- 🎯 Group-based organization
+- ⚡ Fast and efficient
 
-### Grupos e Organização
-- Estrutura hierárquica de grupos
-- Gerenciamento de permissões por grupo
-- Ações em massa
-- Estatísticas e relatórios
+## Prerequisites
 
-### Interface Moderna
-- Design responsivo
-- Temas claro/escuro
-- Dashboard interativo
-- Componentes reutilizáveis
+- Node.js 18.x or later
+- npm 9.x or later
+- Network that allows WoL packets
 
-## 🛠 Tecnologias
+## Installation
 
-- **Frontend**: Next.js 14, TypeScript, TailwindCSS
-- **Estado**: React Query, Zod
-- **Autenticação**: NextAuth.js
-- **Estilização**: TailwindCSS + CSS Modules
-
-## 📦 Instalação
-
+1. Clone the repository:
 ```bash
-# Clone o repositório
-git clone https://github.com/seu-usuario/sysmaster-app.git
-
-# Entre no diretório
-cd sysmaster-app
-
-# Instale as dependências
-yarn install
-
-# Configure as variáveis de ambiente
-cp .env.example .env.local
-
-# Inicie o servidor de desenvolvimento
-yarn dev
+git clone https://github.com/gustavofalcao1/wol-app.git
+cd wol-app
 ```
 
-## 🔧 Configuração
-
-### Variáveis de Ambiente
-
-```env
-# Autenticação
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=seu-secret-aqui
-
-# Database
-DATABASE_URL=sua-url-aqui
-
-# API
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
+2. Install dependencies:
+```bash
+npm install
 ```
 
-## 📚 Estrutura do Projeto
-
-```
-src/
-├── core/              # Lógica de negócios
-│   ├── devices/       # Gerenciamento de dispositivos
-│   ├── groups/        # Gerenciamento de grupos
-│   └── auth/          # Autenticação
-├── ui/               # Interface do usuário
-│   ├── components/    # Componentes React
-│   ├── hooks/         # Hooks customizados
-│   └── themes/        # Sistema de temas
-└── services/         # Serviços externos
-    ├── api/          # Cliente API
-    └── wakeonlan/    # Serviço Wake-on-LAN
+3. Start the development server:
+```bash
+npm run dev
 ```
 
-## 🔐 Segurança
+The application will be available at `http://localhost:3000`.
 
-- Autenticação JWT com refresh tokens
-- Validação de entrada com Zod
-- CSRF protection
-- Rate limiting
-- Logs de auditoria
+## Usage
 
-## 🤝 Contribuindo
+1. **Add Computers**: Add computers with their name, IP address, and MAC address
+2. **Create Groups**: Organize computers into groups for easier management
+3. **Wake Computers**: Click the "Wake" button to send WoL packets
+4. **Manage Groups**: Add/remove computers from groups as needed
 
-1. Fork o projeto
-2. Crie sua branch de feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+## Project Structure
 
-## 📝 Licença
+```
+wakeonlan/
+├── src/
+│   ├── app/              # Next.js app directory
+│   │   ├── api/         # API routes
+│   │   └── page.tsx     # Main page component
+│   ├── components/      # React components
+│   ├── data/           # JSON database
+│   └── types/          # TypeScript types
+├── public/             # Static files
+└── package.json        # Project dependencies
+```
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+---
 
-## 🎯 Roadmap
+## API Endpoints
 
-### Versão 1.0
-- [x] Gerenciamento básico de dispositivos
-- [x] Wake-on-LAN
-- [x] Grupos simples
-- [x] Autenticação básica
+- `POST /api/wake`: Wake a computer
+  - Body: `{ mac: string, ip: string }`
+  - Returns: Success/error message
 
-### Versão 1.1
-- [ ] Monitoramento de recursos
-- [ ] Notificações
-- [ ] API pública
-- [ ] Integração com Active Directory
+## Contributing
 
-### Versão 2.0
-- [ ] Automação de tarefas
-- [ ] Gerenciamento de patches
-- [ ] Logs centralizados
-- [ ] Dashboard customizável
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Version History
+
+- v0.1.2 - Current version
+  - Improved MAC address validation
+  - Auto-refresh functionality
+  - Group management enhancements
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with Next.js 13
+- Uses node-wol for Wake-on-LAN functionality
+- JSON Server for data management
