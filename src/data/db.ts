@@ -57,7 +57,11 @@ export function resetDb(): void {
  * Get all computers
  */
 export async function getComputers(): Promise<Computer[]> {
-  return [...db.computers];
+  // Simulate random status
+  return [...db.computers].map(c => ({
+    ...c,
+    status: Math.random() > 0.5 ? 'online' : 'offline'
+  }));
 }
 
 /**

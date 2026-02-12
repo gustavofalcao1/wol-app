@@ -9,45 +9,28 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Cores primárias
-        primary: {
-          DEFAULT: 'var(--color-primary)',
-          dark: 'var(--color-primary-dark)',
-          light: 'var(--color-primary-light)',
-        },
-        // Cores de background
-        background: {
-          DEFAULT: 'var(--color-background)',
-          alt: 'var(--color-background-alt)',
-        },
-        // Cores de superfície
-        surface: {
-          DEFAULT: 'var(--color-surface)',
-          alt: 'var(--color-surface-alt)',
-        },
-        // Cores de texto
-        text: {
-          DEFAULT: 'var(--color-text-primary)',
-          secondary: 'var(--color-text-secondary)',
-          disabled: 'var(--color-text-disabled)',
-        },
-        // Estados
-        success: {
-          DEFAULT: 'var(--color-success)',
-          light: 'var(--color-success-light)',
-        },
-        error: {
-          DEFAULT: 'var(--color-error)',
-          light: 'var(--color-error-light)',
-        },
-        warning: {
-          DEFAULT: 'var(--color-warning)',
-          light: 'var(--color-warning-light)',
-        },
-        info: {
-          DEFAULT: 'var(--color-info)',
-          light: 'var(--color-info-light)',
-        },
+        primary: 'var(--color-primary)',
+        'primary-dark': 'var(--color-primary-dark)',
+        'primary-light': 'var(--color-primary-light)',
+        'primary-hover': 'var(--color-primary-dark)',
+        success: 'var(--color-success)',
+        'success-light': 'var(--color-success-light)',
+        'success-hover': 'var(--color-success-light)',
+        background: 'var(--color-background)',
+        'background-alt': 'var(--color-background-alt)',
+        surface: 'var(--color-surface)',
+        'surface-alt': 'var(--color-surface-alt)',
+        border: 'var(--color-border)',
+        foreground: 'var(--color-text-primary)',
+        'text-primary': 'var(--color-text-primary)',
+        'text-secondary': 'var(--color-text-secondary)',
+        'text-disabled': 'var(--color-text-disabled)',
+        error: 'var(--color-error)',
+        'error-light': 'var(--color-error-light)',
+        warning: 'var(--color-warning)',
+        'warning-light': 'var(--color-warning-light)',
+        info: 'var(--color-info)',
+        'info-light': 'var(--color-info-light)',
         'test-red': '#FF0000',
       },
       spacing: {

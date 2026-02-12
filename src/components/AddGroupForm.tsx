@@ -12,6 +12,7 @@ export default function AddGroupForm({ onSubmit, onCancel }: AddGroupFormProps) 
   const [formData, setFormData] = useState({
     name: '',
     prefix: '',
+    computerIds: [],
   });
 
   const handleSubmit = (e: React.FormEvent) => {

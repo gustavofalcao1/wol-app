@@ -16,11 +16,10 @@ export interface User {
 export interface Computer {
   id: string;
   name: string;
-  macAddress: string;
-  ipAddress: string;
+  mac: string;
+  ip: string;
   status: 'online' | 'offline';
-  lastSeen: string;
-  group?: string;
+  groupId?: string;
 }
 
 export interface Group {
@@ -41,7 +40,7 @@ export interface Task {
 export interface Message {
   id: string;
   content: string;
-  sender: string; // User ID
+  sender: User;
   receiver: string; // User ID
   timestamp: string;
   read: boolean;

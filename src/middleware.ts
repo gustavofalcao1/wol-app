@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
-import { JWT_SECRET } from '@/lib/auth';
+import { JWT_SECRET } from '@/lib/auth-edge';
 
 /**
  * Middleware to protect API routes

@@ -7,7 +7,7 @@ export const users: User[] = [
   {
     id: '1',
     username: 'admin',
-    password: '50e145462cf4feac9a8719d88ba10f56fde0feb11bece1c4aafcf0662a534749',
+    password: '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
     role: 'admin'
   }
 ];

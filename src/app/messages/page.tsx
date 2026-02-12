@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/ui/Avatar';
 import { Message, User } from '@/types/dashboard';
 
-const mockMessages: (Message & { sender: User })[] = [
+const mockMessages: Message[] = [
   {
     id: '1',
     content: 'Server maintenance scheduled for tonight',

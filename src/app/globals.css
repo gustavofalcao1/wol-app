@@ -32,6 +32,6 @@
   }
 
   .label {
-    @apply block text-sm font-medium text-secondary mb-1;
+    @apply block text-sm font-medium text-text-secondary mb-1;
   }
 }
